@@ -1,0 +1,11 @@
+# Local development evidence and private operational data
+.local/
+.del/
+private/
+logs/
+.env
+.env.*
+*.log
+__pycache__/
+.DS_Store
+Thumbs.db

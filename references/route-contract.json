@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "purpose": "Offline semantic consistency only; not executable adapters or runtime evidence.",
+  "statuses": ["PASS", "FAIL", "BLOCKED", "UNKNOWN", "NOT_APPLICABLE"],
+  "classifications": ["VERIFIED", "INFERRED", "UNKNOWN"],
+  "gate_semantics": {
+    "required_gates": "Current direct-evidence propositions; passing these alone does not establish task readiness or action authority.",
+    "authorization_gates": "Scope/authority predicates evaluated separately from runtime evidence; not satisfied by tool success.",
+    "conditional_gates": "Required when the stated condition applies; UNKNOWN cannot be treated as NOT_APPLICABLE.",
+    "task_readiness": "All applicable evidence and authorization gates, hard constraints, and the actual action's authority must hold. Application acceptance requires separate outcome evidence."
+  },
+  "invariants": {
+    "adapter_required": true,
+    "probe_effect": "read-only; no session creation, startup, installation, configuration changes or unapproved charges",
+    "freshness": "current authorized task/context with unchanged relevant runtime, connection, profile, target and visibility",
+    "authority_separate_from_evidence": true,
+    "fallback_preserves_hard_constraints": true,
+    "remote_requires_explicit_scope": true,
+    "profile_binding_not_endpoint_only": true,
+    "transport_not_application_acceptance": true,
+    "no_live_adapter_implemented": true
+  },
+  "routes": [
+    {"id":"C1","name":"Public retrieval","scope":"public","required_gates":["public_retrieval"],"authorization_gates":["public_target_scope"],"failure_policy":"No automatic authenticated escalation."},
+    {"id":"C2","name":"Browser developer inspection","scope":"authorized browser target","required_gates":["inspection_connection"],"authorization_gates":["inspection_scope"],"failure_policy":"Alternative must supply the requested inspection evidence."},
+    {"id":"C3","name":"Session automation","scope":"authorized browser session","required_gates":["session_connection"],"conditional_gates":[{"gate":"target_ready","when":"operation requires an intended target"}],"authorization_gates":["session_scope"],"failure_policy":"Empty target list proves transport only; no task-ready claim for target operations."},
+    {"id":"C4","name":"Project-owned browser tests","scope":"verified project","required_gates":["project_ownership","test_readiness"],"authorization_gates":["project_scope"],"failure_policy":"Unclear ownership blocks; absent project-owned tests is not applicable; no setup during probe."},
+    {"id":"C5","name":"Host-integrated visible browser","scope":"requested host browser surface","required_gates":["installed","runnable","visible"],"authorization_gates":["host_surface_scope"],"failure_policy":"Required visible surface cannot be replaced by hidden control or another surface."},
+    {"id":"C6","name":"User-profile integration","scope":"authorized existing profile integration","required_gates":["integration_runtime","profile_binding"],"authorization_gates":["profile_integration_scope"],"failure_policy":"Unknown profile binding blocks use; retain explicit integration requirement."},
+    {"id":"C7","name":"Existing authenticated browser connection","scope":"authorized existing profile connection","required_gates":["endpoint_connection","profile_binding"],"authorization_gates":["existing_profile_scope"],"failure_policy":"Handshake alone does not prove profile/authentication; no fresh-profile substitution."},
+    {"id":"C8","name":"Remote browser service","scope":"explicit remote boundary","required_gates":["remote_readiness"],"authorization_gates":["remote_scope"],"failure_policy":"No local-to-remote automatic fallback; mutating-only probe leaves readiness unknown without separate authority."},
+    {"id":"C9","name":"Local browser CLI smoke","scope":"already available development target","required_gates":["cli_available","target_ready"],"authorization_gates":["local_smoke_scope"],"failure_policy":"No installation/startup to pass preflight; CLI availability is not browser execution."},
+    {"id":"C10","name":"Desktop interaction","scope":"authorized desktop surface","required_gates":["desktop_runtime"],"authorization_gates":["desktop_scope"],"failure_policy":"Cannot replace required browser API evidence; no credential or consent bypass."},
+    {"id":"C11","name":"Extension project scaffolding","scope":"owned extension target","required_gates":["scaffold_readiness"],"authorization_gates":["scaffold_scope"],"failure_policy":"Unknown ownership blocks; preflight is not write authority or extension runtime evidence."}
+  ]
+}

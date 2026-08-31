@@ -1,0 +1,2 @@
+# Preserve reviewed source bytes; this package has no content-transform filters.
+* -text -filter -ident -working-tree-encoding
