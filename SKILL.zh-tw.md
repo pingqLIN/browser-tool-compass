@@ -1,4 +1,17 @@
-# Browser Tool Router 瀏覽器工具路由
+# Browser Tool Compass 瀏覽器工具羅盤
+
+`openai-chatgpt-browser` 的具名 binding 定義於 route contract，使用 C6 處理已授權
+的既有使用者瀏覽器互動。它不是通用 default、DevTools alias 或 isolated/remote
+browser。選擇前須有當前 capability、availability、精確 profile/surface binding、
+local policy/action authorization 與 profile control ownership；provider、Chrome、
+OpenAI consent 是額外門檻，extension 安裝存在不能滿足這些要求。
+沒有直接介面證據時維持 opaque transport、不推定 CDP 能力；static debugger call
+不等於對外 CDP endpoint。Debugging 維持 C2、isolated remote automation 維持 C8、
+低階既有 profile connection 維持 C7，不靜默改用 user browser。
+重用 adapter 的 ownership/action taxonomy，區分 user、agent-owned、isolated、unknown
+session；unknown binding 阻擋。同 profile 的 OpenAI、DevTools、direct-CDP 不得並行，
+不同 tab 不證明 ownership 分離。Dispatch 前更新 ownership 證據；靜態 Skill 不取得
+lock，也不證明 runtime acceptance。
 
 本文件是 [SKILL.md](SKILL.md) 的繁體中文配套；英文版為權威版本，不是第二個技能入口。
 

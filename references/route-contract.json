@@ -20,6 +20,23 @@
     "transport_not_application_acceptance": true,
     "no_live_adapter_implemented": true
   },
+  "provider_bindings": [
+    {
+      "id": "openai-chatgpt-browser",
+      "route": "C6",
+      "vendor": "openai",
+      "class": "browser_control",
+      "browser": "chrome",
+      "controlPlane": "chatgpt",
+      "browserContext": "authenticated-user",
+      "extensionId": "hehggadaopoacecdllhhajmbjkdcmajg",
+      "transport": "opaque",
+      "transportConfidence": "unverified",
+      "required_gates": ["integration_runtime", "profile_binding", "current_capability", "exclusive_profile_control"],
+      "authorization_gates": ["profile_integration_scope", "local_action_authority", "provider_confirmation_when_required"],
+      "failure_policy": "Installation is not eligibility. No CDP capability inference from internal debugger calls. Preserve explicit surface and isolation constraints. Never compete with DevTools/direct CDP on the same profile."
+    }
+  ],
   "routes": [
     {"id":"C1","name":"Public retrieval","scope":"public","required_gates":["public_retrieval"],"authorization_gates":["public_target_scope"],"failure_policy":"No automatic authenticated escalation."},
     {"id":"C2","name":"Browser developer inspection","scope":"authorized browser target","required_gates":["inspection_connection"],"authorization_gates":["inspection_scope"],"failure_policy":"Alternative must supply the requested inspection evidence."},

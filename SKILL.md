@@ -3,7 +3,7 @@ name: browser-tool-router
 description: Choose and diagnose browser tool routes by task, required surface, profile, and evidence gates. Use when browser route selection is unclear; this skill does not install, repair, or operate browser tools itself.
 ---
 
-# Browser Tool Router
+# Browser Tool Compass
 
 Choose the narrowest authorized route that can produce the requested evidence. This portable decision layer defines semantic gates; a separately approved environment adapter supplies actual tool bindings and read-only probes. Without an approved adapter and successful current probes, runtime availability remains `UNKNOWN` unless direct evidence establishes `FAIL` or `BLOCKED`.
 
@@ -32,6 +32,22 @@ Choose the narrowest authorized route that can produce the requested evidence. T
 Authenticated acceptance generally selects C7; an explicit integration requirement may select C6. Neither class authorizes consent or writes. C6 and C7 must prove current binding to the intended profile/session, not merely a working transport. A loopback or file target alone does not require C5; use the task's evidence and surface requirements.
 
 ## Gates, fallback and stopping
+
+The named `openai-chatgpt-browser` binding in the route contract uses C6 for
+authorized existing-user-browser interaction. It is not a general default,
+DevTools alias, or isolated/remote browser. Require current capability,
+availability, exact profile/surface binding, local policy/action authorization,
+and profile control ownership before selection. Provider/Chrome/OpenAI consent
+remains an additional gate. An installed extension alone satisfies none of these.
+Keep its transport opaque and CDP capability unverified until direct evidence
+supports the claimed interface; a static debugger call is not an exposed endpoint.
+Debugging remains C2, isolated remote automation C8, and low-level existing
+profile connections C7. Do not silently switch these tasks to the user browser.
+Reuse the adapter's ownership/action taxonomy. Distinguish user, agent-owned,
+isolated and unknown sessions; unknown binding blocks. Same-profile OpenAI,
+DevTools or direct-CDP control must not run concurrently; different tabs do not
+establish separate ownership. Refresh scoped ownership evidence at dispatch;
+this static skill neither acquires locks nor proves runtime acceptance.
 
 - C5 requires separate `installed`, `runnable`, and `visible` passes. Visible means the intended controlled tab is exposed on the requested user-facing surface. Hidden control is insufficient.
 - A failed gate stops that route. Consider alternatives only if they preserve every hard constraint and the task's authority permits them. State the changed route and evidence limitations before using it. An explicitly required surface/profile must not be silently substituted; if no alternative satisfies it, report `BLOCKED`.
