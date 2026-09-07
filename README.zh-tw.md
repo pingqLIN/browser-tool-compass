@@ -2,6 +2,8 @@
 
 **Browser Tool Compass** · [English](README.md)
 
+![貓頭鷹導航員手持黃銅羅盤，指向穿越幾何節點的青綠色路徑。](docs/assets/readme/browser-tool-compass-owl-banner.png)
+
 這個可攜式決策技能協助選擇範圍最小且已獲授權的瀏覽器工具。它分開記錄工具可用性、使用者授權與應用成果，避免把連線成功誤認為可存取指定設定檔，或整個任務已完成。
 
 技能識別碼維持 `browser-tool-router`，以相容既有引用。

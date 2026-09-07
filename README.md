@@ -2,6 +2,8 @@
 
 **瀏覽器工具羅盤** · [繁體中文](README.zh-tw.md)
 
+![An owl navigator holding a brass compass points toward a teal route through geometric waypoints.](docs/assets/readme/browser-tool-compass-owl-banner.png)
+
 A portable decision skill for choosing the narrowest authorized browser tool.
 It separates tool availability, user authority and application outcomes, so a
 successful connection does not become an unsupported claim about profile access
