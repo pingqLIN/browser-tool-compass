@@ -1,17 +1,8 @@
 # Browser Tool Compass 瀏覽器工具羅盤
 
-`openai-chatgpt-browser` 的具名 binding 定義於 route contract，使用 C6 處理已授權
-的既有使用者瀏覽器互動。它不是通用 default、DevTools alias 或 isolated/remote
-browser。選擇前須有當前 capability、availability、精確 profile/surface binding、
-local policy/action authorization 與 profile control ownership；provider、Chrome、
-OpenAI consent 是額外門檻，extension 安裝存在不能滿足這些要求。
-沒有直接介面證據時維持 opaque transport、不推定 CDP 能力；static debugger call
-不等於對外 CDP endpoint。Debugging 維持 C2、isolated remote automation 維持 C8、
-低階既有 profile connection 維持 C7，不靜默改用 user browser。
-重用 adapter 的 ownership/action taxonomy，區分 user、agent-owned、isolated、unknown
-session；unknown binding 阻擋。同 profile 的 OpenAI、DevTools、direct-CDP 不得並行，
-不同 tab 不證明 ownership 分離。Dispatch 前更新 ownership 證據；靜態 Skill 不取得
-lock，也不證明 runtime acceptance。
+`openai-chatgpt-browser` 的具名 binding 定義於 route contract，使用 C6 處理已授權的既有使用者瀏覽器互動。它不是通用 default、DevTools alias 或 isolated/remote browser。選擇前須有當前 capability、availability、精確 profile/surface binding、local policy/action authorization 與 profile control ownership；provider、Chrome、OpenAI consent 是額外門檻，extension 安裝存在不能滿足這些要求。
+沒有直接介面證據時維持 opaque transport、不推定 CDP 能力；static debugger call 不等於對外 CDP endpoint。Debugging 維持 C2、isolated remote automation 維持 C8、低階既有 profile connection 維持 C7，不靜默改用 user browser。
+重用 adapter 的 ownership/action taxonomy，區分 user、agent-owned、isolated、unknown session；unknown binding 阻擋。同 profile 的 OpenAI、DevTools、direct-CDP 不得並行，不同 tab 不證明 ownership 分離。Dispatch 前更新 ownership 證據；靜態 Skill 不取得 lock，也不證明 runtime acceptance。
 
 本文件是 [SKILL.md](SKILL.md) 的繁體中文配套；英文版為權威版本，不是第二個技能入口。
 
@@ -40,6 +31,19 @@ lock，也不證明 runtime acceptance。
 | C11 | 擴充功能專案骨架 | 建立擴充功能或相關治理；執行驗證另用其他路由 |
 
 登入狀態驗收通常選 C7；若指定整合介面，則可選 C6。兩者都不自行授權同意畫面或寫入操作。C6／C7 須證明當前連線綁定指定設定檔／工作階段，僅傳輸正常不足。回送位址或檔案目標本身不強制 C5，仍依介面與證據需求選擇。
+
+## 環境出現新工具或新 capability 時
+
+這是 **Agent maintenance decision**，不是人類 setup 流程。
+
+- 先嘗試把新 capability 映射到既有 C1–C11 semantic route。
+- 若既有 route 已能保留所需 surface、authority、evidence、profile/session、visibility 與 data-boundary semantics，分類為 `BINDING_EXTENSION`。
+- 若 route 語意正確，但 provider 需要額外 gate，分類為 `PROVIDER_REFINEMENT`。
+- 只有既有 C-class 無法表示 execution boundary，且硬套會改變原語意或削弱 hard constraint 時，才分類為 `NEW_ROUTE_PROPOSAL`。
+- 新 product、plugin、MCP tool、CLI 或 provider 不會自動成為新 route。
+- 修改 taxonomy 或 binding 前，先產生 maintenance decision record，並依[Agent 擴充契約](references/extending-routes.zh-tw.md)同步更新必要檔案與驗證項目。
+
+不得只是為插入新類別而重新編號既有 route ID；若 environment binding 已足夠，也不得為單一 provider 改寫 portable semantics。
 
 ## 關卡、替代與停止
 
