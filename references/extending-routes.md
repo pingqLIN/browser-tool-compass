@@ -1,67 +1,101 @@
-# Extending routes and environment bindings
+# Agent extension contract: routes and environment bindings
 
-Browser Tool Compass separates **portable route semantics** from **environment-specific tool bindings**. Most environments should extend the adapter layer, not the C-class taxonomy.
+This document is for **AI agents, Lead Agents and workflow orchestrators** that maintain or adapt Browser Tool Compass. It is not a human click-by-click setup guide.
 
-## First decision: binding or new route?
+Browser Tool Compass separates **portable route semantics** from **environment-specific tool bindings**. The default rule is:
 
-Use an existing C1–C11 route whenever the new browser tool can satisfy that route's meaning without weakening task constraints, authority, evidence, profile/session binding, visibility, or data-boundary requirements.
+> **Map a new tool to an existing C1–C11 route first. Add a new route class only when the existing taxonomy cannot preserve the task's surface, authority, evidence, binding, visibility or data-boundary semantics.**
 
-**A new tool is not automatically a new route.**
+A new product, plugin, MCP tool, CLI, browser integration or provider is **not** automatically a new route.
 
-| Situation | Preferred change |
-|---|---|
-| A new product/tool implements the same task semantics as an existing C-class | Add or update an environment adapter / provider binding |
-| A host exposes the same route through a different command, plugin, MCP tool or installation path | Update the environment adapter |
-| A provider needs extra runtime, consent, ownership or profile-binding checks | Add provider-specific gates/binding while keeping the existing route when its core semantics still fit |
-| No existing C-class can represent the required browser surface or execution boundary without changing its meaning | Propose a new route class |
+## Agent classification contract
 
-Do not create C12 merely because an environment has a twelfth browser product.
+When an agent encounters a browser-related capability that is not represented in the current environment, it MUST classify the maintenance change before editing project files.
 
-## Adding a tool to an existing route
+### `BINDING_EXTENSION`
 
-1. **Choose the semantic route.** Match the task surface and execution boundary to C1–C11 in `SKILL.md` and `references/routing-matrix.md`.
-2. **Define the environment binding.** Record adapter identity/version, supported environment, exact exposed tool, route IDs, unsupported routes and trusted instructions.
-3. **Define read-only probes.** State the exact probe, its side effects, the proposition it tests, and the response fields that constitute `PASS`, `FAIL`, `BLOCKED` or `UNKNOWN`. A probe must not install, start, repair or reconfigure tooling just to pass.
-4. **Preserve separate authority and evidence.** Tool availability never grants action authority. Profile/session binding, visibility, remote data handling and provider consent remain independent gates where applicable.
-5. **Test ambiguity and failure.** Verify that missing evidence stays `UNKNOWN`, a failed required gate stops the route, and fallback never silently changes explicit surface/profile/data-boundary constraints.
+Use when an existing C1–C11 route already represents the required task semantics.
 
-Provider-specific metadata may be represented in `references/route-contract.json` under `provider_bindings` when useful for offline consistency. That entry is semantic metadata only; it does not make the provider callable.
+The agent SHOULD keep the C-class unchanged and add or update the environment adapter/provider binding. It must identify the exact tool, trusted instructions, bounded read-only probes, gate semantics, profile/session binding requirements, visibility constraints, data boundary and failure behavior.
 
-## When a new route class is justified
+### `PROVIDER_REFINEMENT`
 
-A new route class is justified only when all of the following are true:
+Use when the existing route semantics are correct but a provider needs extra runtime, consent, ownership, profile-binding or other gates.
 
-- the required task surface or execution boundary is materially different from every existing C-class;
+The agent SHOULD keep the route ID and add only the provider-specific binding/gates required by that environment. Provider metadata in `references/route-contract.json` remains offline semantic metadata; it does not make the provider callable.
+
+### `NEW_ROUTE_PROPOSAL`
+
+Use only when all of the following are true:
+
+- the required browser surface or execution boundary is materially different from every existing C-class;
 - mapping it to an existing route would change that route's meaning or weaken a hard constraint;
-- its required evidence/authorization gates cannot be expressed as a provider-specific refinement of an existing route; and
-- at least one concrete task case demonstrates why the new semantic category is needed.
+- the required evidence/authorization gates cannot be expressed as a provider refinement of an existing route; and
+- at least one concrete task case demonstrates why a new semantic category is necessary.
 
-If the distinction is only product/vendor/version/install-path specific, keep it in the adapter layer.
+If the difference is only product/vendor/version/install-path specific, the agent MUST NOT create a new route. Do not create C12 merely because an environment exposes a twelfth browser product.
+
+## Required agent decision record
+
+Before mutating taxonomy or bindings, produce a concise maintenance record:
+
+```text
+CAPABILITY_OR_TOOL:
+TARGET_ENVIRONMENT:
+CLASSIFICATION: BINDING_EXTENSION | PROVIDER_REFINEMENT | NEW_ROUTE_PROPOSAL
+EXISTING_ROUTE_CANDIDATES:
+WHY_EXISTING_ROUTE_IS_SUFFICIENT_OR_INSUFFICIENT:
+HARD_CONSTRAINTS_TO_PRESERVE:
+REQUIRED_EVIDENCE_GATES:
+REQUIRED_AUTHORIZATION_GATES:
+FILES_EXPECTED_TO_CHANGE:
+```
+
+This is a maintenance decision artifact, not runtime evidence.
+
+## Existing-route binding contract
+
+For `BINDING_EXTENSION` or `PROVIDER_REFINEMENT`, the agent MUST preserve portable route semantics unless evidence shows they are insufficient.
+
+The resulting binding should define:
+
+- adapter identity/version and supported environment;
+- supported route IDs and explicit unsupported routes;
+- exact currently exposed tool plus trusted tool instructions;
+- discovery rules when paths/tool names can vary;
+- bounded read-only probes and the proposition each probe proves;
+- expected response fields and `PASS` / `FAIL` / `BLOCKED` / `UNKNOWN` / `NOT_APPLICABLE` interpretation;
+- identity/profile/session evidence where required;
+- local/remote data-boundary rules and minimal returned metadata;
+- stop, cleanup and ownership behavior.
+
+The agent MUST NOT install, start, repair, reconfigure or weaken trust controls merely to manufacture a passing probe.
 
 ## New-route change contract
 
-When adding a new route, update the portable contract consistently:
+For `NEW_ROUTE_PROPOSAL`, the agent MUST update the portable contract consistently rather than editing one file in isolation:
 
-1. `SKILL.md` — add the route ID, portable name and selection meaning.
-2. `SKILL.zh-tw.md` — keep the Traditional Chinese companion semantically aligned.
-3. `references/routing-matrix.md` and `.zh-tw.md` — define required gates, authorization gates, pass evidence, failure meaning and stop conditions.
-4. `references/route-contract.json` — add the machine-readable route metadata; increment `schema_version` only when the JSON contract shape or interpretation changes, not merely because one route row is added.
-5. `examples/route-cases.md` and `.zh-tw.md` — add at least one positive selection case plus an ambiguity/failure or non-selection case.
-6. `README.md` and `README.zh-tw.md` — update the visual route map and any C-range references.
-7. Validate that route IDs, names and gate semantics agree across all maintained files, and that no new wording implies executable browser automation.
+1. `SKILL.md` — route ID, portable name and selection semantics.
+2. `SKILL.zh-tw.md` — semantically aligned Traditional Chinese companion.
+3. `references/routing-matrix.md` and `.zh-tw.md` — required gates, authorization gates, pass evidence, failure meaning and stop conditions.
+4. `references/route-contract.json` — machine-readable route metadata. Increment `schema_version` only when the JSON contract shape or interpretation changes, not merely because a route row is added.
+5. `examples/route-cases.md` and `.zh-tw.md` — at least one positive selection case and one ambiguity/failure/non-selection case.
+6. `README.md` and `README.zh-tw.md` — Agent route map and all C-range references.
+7. Re-run consistency checks across route IDs, names and gate semantics and verify that no wording implies executable browser automation.
 
-Route IDs are stable compatibility identifiers. Do not renumber existing classes to insert a new one; append a new ID unless a separately governed breaking migration is explicitly intended.
+Route IDs are stable compatibility identifiers. The agent MUST NOT renumber existing classes merely to insert a new one. Append the next ID unless a separately governed breaking migration is explicitly authorized.
 
-## Acceptance checklist
+## Acceptance conditions
 
-Before treating an extension as ready:
+The maintaining agent may mark the extension ready only when:
 
-- The route/binding choice is explained: **why an existing route is enough, or why it is not**.
-- Environment-specific facts remain in the adapter/provider binding rather than leaking into portable route semantics.
-- Read-only probes are bounded and do not mutate state to manufacture a pass.
-- Authority, capability, binding, execution and application outcome remain separate propositions.
-- Explicit surface/profile/visibility/data-boundary constraints survive fallback.
-- Synthetic examples cover at least one expected selection and one boundary case.
-- English and Traditional Chinese maintained documents remain semantically aligned.
+- the binding-vs-route classification is explicit and justified;
+- environment-specific facts remain outside portable route semantics unless they truly define a new semantic boundary;
+- probes are bounded and do not mutate state to create a pass;
+- authority, capability, binding, execution and application outcome remain separate propositions;
+- explicit surface/profile/visibility/data-boundary constraints survive fallback;
+- synthetic examples cover the intended selection and at least one boundary case;
+- English and Traditional Chinese maintained documents remain semantically aligned;
+- the repository still describes a decision/router skill, not a browser automation runtime.
 
 [Traditional Chinese companion](extending-routes.zh-tw.md)
